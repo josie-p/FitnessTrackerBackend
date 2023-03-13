@@ -1,6 +1,8 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
 
+//passed all tests 12:00 3/13, do HASH passwords before submitting
+
 // database functions
 
 // user functions

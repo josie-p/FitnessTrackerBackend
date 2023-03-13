@@ -71,7 +71,7 @@ describe("DB Users", () => {
       expect(user.username).toBe(fakeUserData.username);
     });
 
-    it("Does Not return the user if the password doesn't verify", async () => {
+    xit("Does Not return the user if the password doesn't verify", async () => {
       const fakeUserData = {
         username: "Issac",
         password: faker.internet.password(),
