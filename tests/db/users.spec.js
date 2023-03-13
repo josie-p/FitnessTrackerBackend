@@ -84,7 +84,7 @@ describe("DB Users", () => {
       expect(user).toBeFalsy();
     });
 
-    xit("Does NOT return the password", async () => {
+    it("Does NOT return the password", async () => {
       const fakeUserData = {
         username: "Michael",
         password: faker.internet.password(),
