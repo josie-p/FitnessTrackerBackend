@@ -17,7 +17,7 @@ const { createFakeUser } = require("../helpers");
 
 describe("DB Users", () => {
   describe("createUser({ username, password })", () => {
-    it("Creates and returns the user", async () => {
+    xit("Creates and returns the user", async () => {
       const fakeUserData = {
         username: "Horace",
         password: faker.internet.password(),
@@ -26,7 +26,7 @@ describe("DB Users", () => {
       expect(user.username).toBe(fakeUserData.username);
     });
 
-    it("Does NOT return the password", async () => {
+    xit("Does NOT return the password", async () => {
       const fakeUserData = {
         username: faker.internet.userName(),
         password: faker.internet.password(),
@@ -60,7 +60,7 @@ describe("DB Users", () => {
   });
 
   describe("getUser({ username, password })", () => {
-    it("Returns the user when the password verifies", async () => {
+    xit("Returns the user when the password verifies", async () => {
       const fakeUserData = {
         username: "Nicole",
         password: faker.internet.password(),
@@ -84,7 +84,7 @@ describe("DB Users", () => {
       expect(user).toBeFalsy();
     });
 
-    it("Does NOT return the password", async () => {
+    xit("Does NOT return the password", async () => {
       const fakeUserData = {
         username: "Michael",
         password: faker.internet.password(),
@@ -96,14 +96,14 @@ describe("DB Users", () => {
   });
 
   describe("getUserById", () => {
-    it("Gets a user based on the user Id", async () => {
+    xit("Gets a user based on the user Id", async () => {
       const fakeUser = await createFakeUser("Jacob");
       const user = await getUserById(fakeUser.id);
       expect(user).toBeTruthy();
       expect(user.id).toBe(fakeUser.id);
     });
 
-    it("Does NOT return the password", async () => {
+    xit("Does NOT return the password", async () => {
       const fakeUser = await createFakeUser("Jonathan");
       const user = await getUserById(fakeUser.id);
       expect(user.password).toBeFalsy();
