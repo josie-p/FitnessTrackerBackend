@@ -11,7 +11,7 @@ async function createUser({ username, password }) {
     INSERT INTO users (username, password)
     VALUES ($1, $2)
     ON CONFLICT (username) DO NOTHING
-    RETURNING username;
+    RETURNING id, username;
     `, [username, password]);
     return user;
   } catch(error) {
@@ -31,7 +31,6 @@ async function getUser({ username, password }) {
     if(user === undefined){
       return;
     }else{
-      console.log(user.username, "user in else");
       user.password  = "";
       return user;
     }
@@ -42,6 +41,27 @@ async function getUser({ username, password }) {
 }
 
 async function getUserById(userId) {
+  try{
+
+    
+    console.log(userId, "this is userId");
+    
+    const { rows: [user] } = await client.query(`
+    SELECT id, username, password
+    FROM users
+    WHERE id = ${ userId };
+    `);
+    
+    if(!user){
+      return null
+    }
+
+    console.log(user, "this is user");
+    user.password = "";
+    return user;
+  } catch (error){
+    throw error;
+  }
 
 }
 
