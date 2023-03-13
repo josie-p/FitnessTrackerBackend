@@ -1,6 +1,8 @@
 /* eslint-disable no-useless-catch */
 const client = require('./client');
 
+//activities passing all tests 12:40 3/13
+
 // database functions
 async function createActivity({ name, description }) {
   // return the new activity
