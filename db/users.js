@@ -4,7 +4,7 @@ const client = require("./client");
 
 // user functions
 async function createUser({ username, password }) {
-  
+
 }
 
 async function getUser({ username, password }) {
