@@ -87,9 +87,35 @@ async function getAllRoutinesByUser({ username }) {
   }
 }
 
-async function getPublicRoutinesByUser({ username }) {}
+async function getPublicRoutinesByUser({ username }) {
+  try{
+    const { rows } = await client.query(`
+    SELECT routines.*, users.username AS "creatorName"
+    FROM routines JOIN users ON routines."creatorId" = users.id
+    WHERE users.username = $1 AND routines."isPublic";
+    `, [username]);
 
-async function getPublicRoutinesByActivity({ id }) {}
+    return await attachActivitiesToRoutines(rows);
+  } catch(error){
+    throw error;
+  }
+}
+
+async function getPublicRoutinesByActivity({ id }) {
+  try{
+    const { rows } = await client.query(`
+    SELECT routines.*, users.username AS "creatorName"
+    FROM routines JOIN users ON routines."creatorId" = users.id
+    JOIN routine_activities ON routine_activities."routineId" = routines.id
+    WHERE routines."isPublic" AND routine_activities."activityId" = $1;
+    `, [id]);
+
+
+    return await attachActivitiesToRoutines(rows);
+  } catch(error){
+    throw error;
+  }
+}
 
 async function updateRoutine({ id, ...fields }) {}
 
