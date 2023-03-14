@@ -43,8 +43,32 @@ async function getRoutinesWithoutActivities() {
     throw error;
   }
 }
-
-async function getAllRoutines() {}
+// "creatorId", "isPublic", name, duration, count, "routineId", "routineActivityId", username AS "creatorName"
+async function getAllRoutines() {
+  try{
+    const { rows: routine } = await client.query(`
+      SELECT *
+      FROM routines;
+    `);
+    const { rows: [activities] } = await client.query(`
+      SELECT routine_activities.*
+      FROM routine_activities
+      JOIN routines
+      ON routines.id = "routineId";
+    `)
+    const { rows: [creatorName] } = await client.query(`
+      SELECT username AS "creatorName"
+      FROM users;
+    `)
+    
+    routine.activities = activities;
+    routine.creatorName = creatorName;
+    console.log(routine, "this is routine");
+    return routine
+  } catch(error){
+    throw error;
+  }
+}
 
 async function getAllPublicRoutines() {}
 
