@@ -59,9 +59,33 @@ async function getAllRoutines() {
   }
 }
 
-async function getAllPublicRoutines() {}
+async function getAllPublicRoutines() {
+  try{
+    const { rows } = await client.query(`
+    SELECT routines.*, users.username AS "creatorName"
+    FROM routines JOIN users ON routines."creatorId" = users.id
+    WHERE routines."isPublic";
+    `);
 
-async function getAllRoutinesByUser({ username }) {}
+    return await attachActivitiesToRoutines(rows);
+  } catch(error){
+    throw error;
+  }
+}
+
+async function getAllRoutinesByUser({ username }) {
+  try{
+    const { rows } = await client.query(`
+    SELECT routines.*, users.username AS "creatorName"
+    FROM routines JOIN users ON routines."creatorId" = users.id
+    WHERE users.username = $1;
+    `, [username]);
+
+    return await attachActivitiesToRoutines(rows);
+  } catch(error){
+    throw error;
+  }
+}
 
 async function getPublicRoutinesByUser({ username }) {}
 
