@@ -7,7 +7,7 @@ require("dotenv").config();
 const faker = require("faker");
 const client = require("../../db/client");
 const {
-  getRoutineById,
+  // getRoutineById,
   getAllRoutines,
   getAllPublicRoutines,
   getAllRoutinesByUser,
