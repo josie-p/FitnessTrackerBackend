@@ -11,6 +11,23 @@ router.post("/register", async(req, res, next) => {
     try{
         const _user = await getUserByUsername(username);
 
+        if(_user){
+            next({
+                error: "User Exists!",
+                message: `User ${username} is already taken.`,
+                name: "UserExistsError"
+            });
+        }
+        if(password.length < 8){
+            next({
+                error:"ShortPasswordError",
+                message: "Password Too Short!",
+                name: "Needs to be 8 Char"
+            })
+        }
+        
+        const user = await createUser({ username, password });
+
         const token =jwt.sign(
             {
                 username: user.username,
@@ -21,19 +38,10 @@ router.post("/register", async(req, res, next) => {
             }
         );
 
-        if(_user){
-            next({
-                name: "UserExistsError",
-                message: "A user by that name already exists"
-            });
-        }
+        res.send({ "message": "thank you for signing up!", "token": token, "user": user });
 
-        const user = await createUser({ username, password });
-
-        res.send({ message: "thank you for signing up!", token });
-
-    }catch({ name, message }){
-        next({ name, message });
+    }catch({ error, message, name }){
+        next({ error, message, name });
     }
 })
 
