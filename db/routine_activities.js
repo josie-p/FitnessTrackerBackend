@@ -35,7 +35,22 @@ async function getRoutineActivityById(id) {
   }
 }
 
-async function getRoutineActivitiesByRoutine({ id }) {}
+async function getRoutineActivitiesByRoutine({ id }) {
+
+  try{
+    const { rows } = await client.query(`
+    SELECT *
+    FROM routine_activities
+    WHERE "routineId" =  $1;
+    `, [id]);
+
+
+    return rows;
+  }catch(error){
+    throw error;
+  }
+
+}
 
 async function updateRoutineActivity({ id, ...fields }) {
 
@@ -65,10 +80,9 @@ async function destroyRoutineActivity(id) {
   try{
     const { rows : [activity_routine] } = await client.query(`
     DELETE FROM routine_activities
-    WHERE "routineId" = ${id};
+    WHERE id = ${id}
+    RETURNING *;
     `);
-
-   console.log(activity_routine, "activity routine");
 
     return activity_routine;
   }catch(error){
@@ -77,7 +91,19 @@ async function destroyRoutineActivity(id) {
 
 }
 
-async function canEditRoutineActivity(routineActivityId, userId) {}
+async function canEditRoutineActivity(routineActivityId, userId) {
+  try{
+    const { rows: [routine_activity] } = await client.query(`
+    SELECT routine_activities.*, routines."creatorId"
+    FROM routine_activities JOIN routines ON routines.id = routine_activities."routineId"
+    WHERE routine_activities.id = $1 AND routines."creatorId" = $2
+    `, [routineActivityId, userId]);
+
+    return routine_activity;
+  }catch(error){
+    throw error;
+  }
+}
 
 module.exports = {
   getRoutineActivityById,
