@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 })
 
 const apiRouter = require("./api");
-app.use("./api", apiRouter);
+app.use("/api", apiRouter);
 
 const client  = require("./db/client");
 client.connect();
