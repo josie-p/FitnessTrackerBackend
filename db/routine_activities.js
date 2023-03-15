@@ -21,15 +21,89 @@ async function addActivityToRoutine({
   }
 }
 
-async function getRoutineActivityById(id) {}
+async function getRoutineActivityById(id) {
+  try{
+    const { rows: [routineActivity] } = await client.query(
+      `SELECT *
+        FROM routine_activities
+        WHERE id = $1;`
+    , [id]);
 
-async function getRoutineActivitiesByRoutine({ id }) {}
+    return routineActivity;
+  }catch(error){
+    throw error;
+  }
+}
 
-async function updateRoutineActivity({ id, ...fields }) {}
+async function getRoutineActivitiesByRoutine({ id }) {
 
-async function destroyRoutineActivity(id) {}
+  try{
+    const { rows } = await client.query(`
+    SELECT *
+    FROM routine_activities
+    WHERE "routineId" =  $1;
+    `, [id]);
 
-async function canEditRoutineActivity(routineActivityId, userId) {}
+
+    return rows;
+  }catch(error){
+    throw error;
+  }
+
+}
+
+async function updateRoutineActivity({ id, ...fields }) {
+
+  const setString = Object.keys(fields).map((key, index) => `"${key}"=$${index + 1}`)
+  .join(", ");
+
+  if(setString.length === 0){
+    return;
+  }
+
+  try{
+    const { rows: [routineActivity] } = await client.query(`
+    UPDATE routine_activities
+    SET ${setString}
+    WHERE id = ${id}
+    RETURNING *;
+    `, Object.values(fields));
+
+    return routineActivity;
+  }catch(error){
+    throw error;
+  }
+}
+
+async function destroyRoutineActivity(id) {
+
+  try{
+    const { rows : [activity_routine] } = await client.query(`
+    DELETE FROM routine_activities
+    WHERE id = ${id}
+    RETURNING *;
+    `);
+
+    return activity_routine;
+  }catch(error){
+    throw error;
+  }
+
+}
+
+async function canEditRoutineActivity(routineActivityId, userId) {
+  try{
+    const { rows: [routine_activity] } = await client.query(`
+    SELECT routine_activities.*, routines."creatorId"
+    FROM routine_activities JOIN routines ON routines.id = routine_activities."routineId"
+    WHERE routine_activities.id = $1 AND routines."creatorId" = $2
+    `, [routineActivityId, userId]);
+
+    return routine_activity;
+  }catch(error){
+    throw error;
+  }
+}
 
 module.exports = {
   getRoutineActivityById,
