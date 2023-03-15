@@ -159,14 +159,14 @@ async function destroyRoutine(id) {
 }
 
 module.exports = {
-  getRoutineById,
-  getRoutinesWithoutActivities,
-  getAllRoutines,
-  getAllPublicRoutines,
-  getAllRoutinesByUser,
-  getPublicRoutinesByUser,
-  getPublicRoutinesByActivity,
-  createRoutine,
-  updateRoutine,
-  destroyRoutine,
+  getRoutineById: getRoutineById,
+  getRoutinesWithoutActivities: getRoutinesWithoutActivities,
+  getAllRoutines: getAllRoutines,
+  getAllPublicRoutines: getAllPublicRoutines,
+  getAllRoutinesByUser: getAllRoutinesByUser,
+  getPublicRoutinesByUser: getPublicRoutinesByUser,
+  getPublicRoutinesByActivity: getPublicRoutinesByActivity,
+  createRoutine: createRoutine,
+  updateRoutine: updateRoutine,
+  destroyRoutine: destroyRoutine,
 };

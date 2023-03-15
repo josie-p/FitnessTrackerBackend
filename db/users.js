@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
+const bcrypt = require ("bcrypt");
 
 //passed all tests 12:00 3/13, do HASH passwords before submitting
 
@@ -8,13 +9,17 @@ const client = require("./client");
 // user functions
 async function createUser({ username, password }) {
   // eslint-disable-next-line no-useless-catch
+  
   try{
+    const SALT_COUNT = 10;
+    const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
+
     const {rows: [user]} = await client.query(`
     INSERT INTO users (username, password)
     VALUES ($1, $2)
     ON CONFLICT (username) DO NOTHING
     RETURNING id, username;
-    `, [username, password]);
+    `, [username, hashedPassword]);
     return user;
   } catch(error) {
     throw error;
@@ -24,18 +29,27 @@ async function createUser({ username, password }) {
 async function getUser({ username, password }) {
   try{
 
-    const { rows: [user] } = await client.query(`
-    SELECT username, password
-    FROM users 
-    WHERE username=$1 AND password=$2;
-    `, [username, password]);
+    // const { rows: [userReturned] } = await client.query(`
+    // SELECT username, password
+    // FROM users 
+    // WHERE username=$1 AND password=$2;
+    // `, [username, password]);
+    
+    // if(userReturned === undefined){
+    //   return;
+    // }
 
-    if(user === undefined){
-      return;
-    }else{
+    const user = await getUserByUsername(username);
+    const hashedPassword = user.password;
+    const passwordsMatch = await bcrypt.compare(password, hashedPassword);
+
+    if(passwordsMatch){
       user.password  = "";
       return user;
+    } else{
+      return;
     }
+    
   }catch(error){
     throw error;
   }
@@ -79,8 +93,8 @@ async function getUserByUsername(userName) {
 }
 
 module.exports = {
-  createUser,
-  getUser,
-  getUserById,
-  getUserByUsername,
+  createUser: createUser,
+  getUser: getUser,
+  getUserById: getUserById,
+  getUserByUsername: getUserByUsername,
 }
