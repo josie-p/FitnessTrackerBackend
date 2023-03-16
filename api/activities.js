@@ -47,23 +47,23 @@ router.post("/", requireUser, async (req, res, next) =>{
 
 // PATCH /api/activities/:activityId
 router.patch("/:activityId", requireUser, async (req, res, next) =>{
-    const activityId = req.params.activityId;
+    const id = req.params.activityId;
     const {name, description} = req.body;
-    const updateFields = {};
+    const fields = {};
 
     if(name){
-        updateFields.name = name;
+        fields.name = name;
     }
     if(description){
-        updateFields.description = description;
+        fields.description = description;
     }
 
     try{
-        const checkIfExists = await getActivityById(activityId);
+        const checkIfExists = await getActivityById(id);
         if(!checkIfExists){
             next({
                 name: "ActivityId does not correspond with any activity",
-                message: `Activity ${activityId} not found`,
+                message: `Activity ${id} not found`,
                 error: "ActivityNotFoundError"
             });
         } 
@@ -76,9 +76,8 @@ router.patch("/:activityId", requireUser, async (req, res, next) =>{
                 error: "ActivityAlreadyExistsError"
             });
         } 
-
-        const updatedActivity = await updateActivity({activityId, updateFields});
-        console.log(updatedActivity);
+        
+        const updatedActivity = await updateActivity({id, ...fields});
         res.send(updatedActivity);
         
     } catch ({name, error, message}){

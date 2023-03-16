@@ -96,14 +96,14 @@ async function attachActivitiesToRoutines(routines) {
   }
 }
 
-async function updateActivity({ id, ...fields }) {
+async function updateActivity({ id, ...fields }) { //if I take out the spread operator we pass the api tests but fail the db tests. & vice versa :/
   // don't try to update the id
   // do update the name and description
   // return the updated activity
 
-  const setString = Object.keys(fields).map((key, index) => `"${key}"=$${index + 1}`)
+  const setString = Object.keys(fields).map((key, index) => `${key}=$${index + 1}`)
   .join(", ");
-
+console.log(setString);
   if(setString.length === 0){
     return;
   }
