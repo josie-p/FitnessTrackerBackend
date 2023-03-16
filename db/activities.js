@@ -103,7 +103,6 @@ async function updateActivity({ id, ...fields }) { //if I take out the spread op
 
   const setString = Object.keys(fields).map((key, index) => `${key}=$${index + 1}`)
   .join(", ");
-console.log(setString);
   if(setString.length === 0){
     return;
   }

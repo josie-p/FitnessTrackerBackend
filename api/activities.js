@@ -7,10 +7,33 @@ const {
     createActivity,
     getActivityByName,
     getActivityById,
-    updateActivity
+    updateActivity,
+    getPublicRoutinesByActivity,
  } = require("../db");
 
 // GET /api/activities/:activityId/routines
+router.get("/:activityId/routines", async(req, res, next) => {
+    const {  activityId } = req.params;
+
+    try{
+        const checkIfExists = await getActivityById(activityId);
+
+        if(!checkIfExists){
+            next({
+                name: "This activity does not exist",
+                message: `Activity ${activityId} not found`, 
+                error: "This activity was not found"
+            });
+        }else{
+        const returnVal = await getPublicRoutinesByActivity({id: activityId});
+        res.send(returnVal);
+        }
+
+    }catch({ name, error, message }){
+        next({name, error, message});
+    }
+
+})
 
 // GET /api/activities
 router.get("/", async (req, res, next) =>{
