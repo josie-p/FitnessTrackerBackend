@@ -1,13 +1,13 @@
 // eslint-disable-next-line no-unused-vars
-const express = require("express");
 
 function requireUser(req, res, next){
     if(!req.user){
+        res.status(401)
         next({
             message: "You must be logged in to perform this action",
-            error: "Missing User",
-            name: "MissingUserError",
-        }, res.sendStatus(401));
+            name: "LoggedInError",
+            error: "You need to log in"
+        });
     }
 
     next();
