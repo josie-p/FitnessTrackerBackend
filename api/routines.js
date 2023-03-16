@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllRoutines, createRoutine} = require("../db");
+const { getAllRoutines, createRoutine, getRoutineById, updateRoutine} = require("../db");
 const { requireUser } = require('./utils');
 // GET /api/routines
 router.get("/", async(req, res, next) => {
@@ -27,6 +27,40 @@ router.post("/", requireUser, async(req, res, next) => {
 })
 
 // PATCH /api/routines/:routineId
+router.patch("/:routineId", requireUser, async(req, res, next) =>{
+    const { isPublic, name, goal } = req.body;
+    const { routineId } = req.params;
+    const { id, username } = req.user;
+    const fields = {};
+    
+    if(name){
+        fields.name = name;
+    }
+    if(goal){
+        fields.goal = goal;
+    }
+    if(!isPublic || isPublic){          //handles if isPublic is true or false! (wouldnt add to body when false b4)
+        fields.isPublic = isPublic;
+    }
+
+    try{
+        const findRoutine = await getRoutineById(routineId);
+        if( findRoutine.creatorId !== id){
+            res.status(403)
+            next({
+                message: `User ${username} is not allowed to update ${findRoutine.name}`,
+                name: "LoggedInError",
+                error: "You need to log in"
+            }); 
+        }
+
+        const updatedRoutine = await updateRoutine({id, ...fields});
+        res.send(updatedRoutine);
+    } catch ({ name, error, message }){
+        next({ name, error, message })
+    }
+
+})
 
 // DELETE /api/routines/:routineId
 

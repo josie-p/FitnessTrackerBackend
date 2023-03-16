@@ -24,7 +24,6 @@ async function getRoutineById(id) {
     SELECT *
     FROM routines
     WHERE id = $1;`, [id]);
-    console.log(routine, "routine from getRoutineById");
     return routine;
   }catch(error){
  throw error;
