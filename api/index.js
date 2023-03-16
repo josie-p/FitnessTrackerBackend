@@ -4,7 +4,7 @@ const app = require("../app");
 
 //jwt:
 const jwt = require("jsonwebtoken");
-const { getUserById, getUser } = require("../db");
+const { getUserById} = require("../db");
 const { JWT_SECRET } = process.env;
 
 router.use(async (req, res, next) => {
@@ -12,13 +12,14 @@ router.use(async (req, res, next) => {
     const auth = req.header("Authorization");
 
     if(!auth){
+        // res.sendStatus(401);
         next();
     }else if(auth.startsWith(prefix)){
         const token = auth.slice(prefix.length);
 
+
         try{
             const { id } = jwt.verify(token, JWT_SECRET);
-
             if(id){
                 req.user = await getUserById(id);
                 next();
@@ -34,11 +35,14 @@ router.use(async (req, res, next) => {
         });
     }
 
-    router.use((req, res, next) => {
-        if(req.user){
-            console.log("User is set:", req.user);
-        }
-    })
+})
+
+router.use((req, res, next) => {
+    if(req.user){
+        console.log("User is set:", req.user);
+    }
+
+    next();
 })
 
 // GET /api/health
