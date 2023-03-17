@@ -80,7 +80,6 @@ router.post("/login", async (req, res, next) => {
 
   try {
     const user = await getUserByUsername(username);
-    console.log(user, "user from /login route");
 
     const token = jwt.sign(
       {
@@ -123,14 +122,12 @@ router.get("/me", requireUser, async (req, res, next) => {
 router.get("/:username/routines", requireUser, async (req, res, next) => {
   const { username } = req.params;
   const user = req.user.username;
-  console.log(user, "req.user from /username/routines");
   try {
     if (user === username) {
       const getPersonalRoutines = await getAllRoutinesByUser({ username });
       res.send(getPersonalRoutines);
     } else {
       const publicRoutines = await getPublicRoutinesByUser({ username });
-      console.log(publicRoutines, "public routines by user");
       res.send(publicRoutines);
     }
   } catch ({ name, error, message }) {

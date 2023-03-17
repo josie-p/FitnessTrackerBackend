@@ -1,67 +1,78 @@
 /* eslint-disable no-useless-catch */
-const client = require('./client');
+const client = require("./client");
 
 //activities passing all tests 12:40 3/13
 
 // database functions
 async function createActivity({ name, description }) {
   // return the new activity
-  try{
-    const {rows: [activity]} = await client.query(`
+  try {
+    const {
+      rows: [activity],
+    } = await client.query(
+      `
       INSERT INTO activities (name, description)
       VALUES ($1, $2)
       RETURNING *;
-    `, [name, description]);
+    `,
+      [name, description]
+    );
     return activity;
-  } catch(error){
+  } catch (error) {
     throw error;
   }
 }
 
 async function getAllActivities() {
   // select and return an array of all activities
-  try{
+  try {
     const { rows } = await client.query(`
     SELECT *
     FROM activities;
-    ` );
+    `);
 
     return rows;
-  }catch(error){
+  } catch (error) {
     throw error;
   }
 }
 
 async function getActivityById(id) {
-  try{
-    const { rows: [activity] } = await client.query(`
+  try {
+    const {
+      rows: [activity],
+    } = await client.query(`
       SELECT *
       FROM activities
       WHERE id = ${id};
-    `)
+    `);
     return activity;
-  } catch (error){
+  } catch (error) {
     throw error;
   }
 }
 
-
 async function getActivityByName(name) {
-  try{
-    const { rows: [activity] } = await client.query(`
+  try {
+    const {
+      rows: [activity],
+    } = await client.query(
+      `
     SELECT *
     FROM activities
     WHERE name = $1;
-    `, [name]);
+    `,
+      [name]
+    );
 
     return activity;
-  }catch(error){
+  } catch (error) {
     throw error;
   }
 }
 
 // used as a helper inside db/routines.js
-async function attachActivitiesToRoutines(routines) {     
+async function attachActivitiesToRoutines(routines) {
   // no side effects
   const routinesToReturn = [...routines];
   const binds = routines.map((_, index) => `$${index + 1}`).join(", ");
@@ -96,31 +107,35 @@ async function attachActivitiesToRoutines(routines) {
   }
 }
 
-async function updateActivity({ id, ...fields }) { //if I take out the spread operator we pass the api tests but fail the db tests. & vice versa :/
+async function updateActivity({ id, ...fields }) {
   // don't try to update the id
   // do update the name and description
   // return the updated activity
 
-  const setString = Object.keys(fields).map((key, index) => `${key}=$${index + 1}`)
-  .join(", ");
-  if(setString.length === 0){
+  const setString = Object.keys(fields)
+    .map((key, index) => `${key}=$${index + 1}`)
+    .join(", ");
+  if (setString.length === 0) {
     return;
   }
 
-  try{
-   const { rows: [activity] } = await client.query(`
+  try {
+    const {
+      rows: [activity],
+    } = await client.query(
+      `
    UPDATE activities
    SET ${setString}
    WHERE id = ${id}
    RETURNING *;
-   `, Object.values(fields));
+   `,
+      Object.values(fields)
+    );
 
-   return activity;
-
-  }catch(error){
+    return activity;
+  } catch (error) {
     throw error;
   }
-
 }
 
 module.exports = {
