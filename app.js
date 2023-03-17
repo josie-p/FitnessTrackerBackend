@@ -24,6 +24,13 @@ app.use((req, res, next) => {
 const apiRouter = require("./api");
 app.use("/api", apiRouter);
 
+app.use("*", (req, res) => {
+    res.status(404).send({
+        error: "404 -- not found",
+        message: "no route found for the request url"
+    });
+})
+
 app.use((error, req, res, next) =>{
     res.send({
         error: error.error,
