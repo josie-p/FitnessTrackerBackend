@@ -6,7 +6,8 @@ const {
     updateRoutineActivity,
     canEditRoutineActivity,
     getRoutineById,
-    getRoutineActivityById
+    getRoutineActivityById,
+    destroyRoutineActivity
 } = require("../db");
 
 
@@ -48,5 +49,34 @@ router.patch("/:routineActivityId", requireUser, async (req, res, next) => {
 })
 
 // DELETE /api/routine_activities/:routineActivityId
+router.delete("/:routineActivityId", requireUser, async(req, res, next) => {
+
+    const { routineActivityId } = req.params;
+    const { id, username } = req.user;
+    // console.log(routineActivityId, "id");
+
+    const findRoutineActivityForName = await getRoutineActivityById(routineActivityId);
+    const findName = await getRoutineById(findRoutineActivityForName.routineId);
+    const name = findName.name;
+
+    try{
+        const findRoutineActivity = await canEditRoutineActivity(routineActivityId, id);
+
+        if(!findRoutineActivity){
+            res.status(403);
+            next({
+                name: "UnauthorizedUserError",
+                message: `User ${username} is not allowed to delete ${name}`,
+                error: "Not creator of this routine_activity"
+            })
+        }
+
+        const deletedRoutineActivity = await destroyRoutineActivity(routineActivityId);
+        res.send(deletedRoutineActivity);
+
+    }catch({name, error, message}){
+        next({name, error, message});
+    }
+})
 
 module.exports = router;
