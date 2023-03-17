@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { getAllRoutines, createRoutine, getRoutineById, updateRoutine} = require("../db");
+const { getAllRoutines, 
+    createRoutine, 
+    getRoutineById, 
+    updateRoutine, 
+    destroyRoutine, 
+    addActivityToRoutine, 
+    getRoutineActivitiesByRoutine } = require("../db");
 const { requireUser } = require('./utils');
 // GET /api/routines
 router.get("/", async(req, res, next) => {
@@ -63,7 +69,53 @@ router.patch("/:routineId", requireUser, async(req, res, next) =>{
 })
 
 // DELETE /api/routines/:routineId
+router.delete("/:routineId", requireUser, async(req, res, next) => {
+    const {routineId} = req.params;
+    const { id, username } = req.user;
+
+    try{
+        const findRoutine = await getRoutineById(routineId);
+        if(findRoutine.creatorId !== id){
+            res.status(403);
+            next({
+                message: `User ${username} is not allowed to delete ${findRoutine.name}`,
+                name: "DeleteError",
+                error: "You must be the owner of this object to delete it"
+            })
+        }else{
+            const deletedRoutine = await destroyRoutine(routineId);
+            console.log(deletedRoutine, "deletedRoutine");
+            res.send(deletedRoutine);
+        }
+    }catch({name, error, message}){
+        next({name, error, message});
+    }
+})
+
+
 
 // POST /api/routines/:routineId/activities
+router.post("/:routineId/activities", async(req, res, next) => {
+    const { routineId } = req.params;
+    // const { id, username } = req.user;
+    const { activityId, count, duration } = req.body;
+    
+    try{
+        const checkDuplicates = await getRoutineActivitiesByRoutine({id: routineId});
+
+        if(checkDuplicates.length && checkDuplicates[0].activityId === activityId){
+            next({
+                error: "You may not have duplicates",
+                name: "NoDuplicatesError",
+                message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`
+            })
+        }else{
+            const addActivity = await addActivityToRoutine({ routineId: routineId, activityId: activityId, count: count, duration: duration });
+            res.send(addActivity);
+        }
+    }catch({name, error, message}){
+        next({name, error, message})
+    }
+})
 
 module.exports = router;

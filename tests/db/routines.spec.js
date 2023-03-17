@@ -12,7 +12,7 @@ const {
   getAllPublicRoutines,
   getAllRoutinesByUser,
   getPublicRoutinesByUser,
-  getPublicRoutinesByActivity,
+  getPublicRoutinesByActivity, 
   createRoutine,
   updateRoutine,
   destroyRoutine,
@@ -453,7 +453,7 @@ describe("DB Routines", () => {
   });
 
   describe("destroyRoutine", () => {            // finished!!!!! working!! 3/14
-    xit("removes routine from database", async () => {
+    it("removes routine from database", async () => {
       const fakeRoutine = await createFakePublicRoutine();
       await destroyRoutine(fakeRoutine.id);
       const {
@@ -469,7 +469,7 @@ describe("DB Routines", () => {
       expect(routine).toBeFalsy();
     });
 
-    xit("Deletes all the routine_activities whose routine is the one being deleted.", async () => {
+    it("Deletes all the routine_activities whose routine is the one being deleted.", async () => {
       const { fakeRoutines, fakeRoutineActivities } =
         await createFakeUserWithRoutinesAndActivities("Jackie");
       const fakeRoutine = fakeRoutines[0];
