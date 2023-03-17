@@ -60,7 +60,7 @@ router.patch("/:routineId", requireUser, async(req, res, next) =>{
             }); 
         }
 
-        const updatedRoutine = await updateRoutine({id, ...fields});
+        const updatedRoutine = await updateRoutine({id: id, ...fields});
         res.send(updatedRoutine);
     } catch ({ name, error, message }){
         next({ name, error, message })
