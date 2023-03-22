@@ -59,6 +59,7 @@ router.patch("/:routineId", requireUser, async (req, res, next) => {
 
   try {
     const findRoutine = await getRoutineById(routineId);
+    console.log(findRoutine, "found routine");
     if (findRoutine.creatorId !== id) {
       res.status(403);
       next({
@@ -67,8 +68,9 @@ router.patch("/:routineId", requireUser, async (req, res, next) => {
         error: "You need to log in",
       });
     }
+console.log(id, fields , "id and fields");
 
-    const updatedRoutine = await updateRoutine({ id: id, ...fields });
+    const updatedRoutine = await updateRoutine({ id: routineId, ...fields });
     res.send(updatedRoutine);
   } catch ({ name, error, message }) {
     next({ name, error, message });
